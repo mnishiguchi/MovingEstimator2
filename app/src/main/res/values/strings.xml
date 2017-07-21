@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MovingEstimator2</string>
+    <string name="app_name">ME:2</string>
+    <string name="no_data_available">No data available</string>
 </resources>
