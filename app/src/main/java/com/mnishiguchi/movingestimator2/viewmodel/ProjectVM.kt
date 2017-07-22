@@ -18,12 +18,12 @@ class ProjectVM : ViewModel() {
     // A temp fake data set
     val projects: LiveData<List<Project>> = MutableLiveData<List<Project>>().apply {
         value = listOf(
-                Project(name = "Project", description = "Description"),
-                Project(name = "Project", description = "Description"),
-                Project(name = "Project", description = "Description"),
-                Project(name = "Project", description = "Description"),
-                Project(name = "Project", description = "Description"),
-                Project(name = "Project", description = "Description")
+                Project(id = 1, name = "Project", description = "Description"),
+                Project(id = 2, name = "Project", description = "Description"),
+                Project(id = 3, name = "Project", description = "Description"),
+                Project(id = 4, name = "Project", description = "Description"),
+                Project(id = 5, name = "Project", description = "Description"),
+                Project(id = 6, name = "Project", description = "Description")
         )
     }
 

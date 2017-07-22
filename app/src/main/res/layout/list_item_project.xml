@@ -1,31 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="4dp"
+    app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/listItemProjectName"
+    <RelativeLayout
+        android:id="@+id/listItemProjectCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:textStyle="bold"
-        tools:text="Project name" />
+        android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/listItemProjectDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        tools:text="Project description" />
+        <TextView
+            android:id="@+id/listItemProjectName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textAppearance="?android:textAppearanceLarge"
+            tools:text="Project name" />
 
-    <TextView
-        android:id="@+id/listItemProjectMoveDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        tools:text="Project move date" />
+        <TextView
+            android:id="@+id/listItemProjectDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/listItemProjectName"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textAppearance="?android:textAppearanceMedium"
+            tools:text="Project description" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/listItemProjectMoveDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/listItemProjectDescription"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textAppearance="?android:textAppearanceMedium"
+            tools:text="Project move date" />
+
+        <TextView
+            android:id="@+id/listItemProjectPopupTrigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/activity_vertical_margin"
+            android:text="@string/options_icon_char"
+            android:textAppearance="?android:textAppearanceLarge" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
