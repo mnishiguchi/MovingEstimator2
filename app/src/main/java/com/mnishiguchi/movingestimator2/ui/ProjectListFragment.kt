@@ -3,6 +3,7 @@ package com.mnishiguchi.movingestimator2.ui
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -21,17 +22,23 @@ import kotlinx.android.synthetic.main.list_item_project.view.*
 import org.jetbrains.anko.support.v4.toast
 
 class ProjectListFragment : Fragment() {
-    private val TAG = javaClass.simpleName
-
     companion object {
         fun newInstance(): ProjectListFragment {
             return ProjectListFragment()
         }
     }
 
+    // Container Activity must implement this interface
+    // https://developer.android.com/training/basics/fragments/communicating.html
+    interface OnInteractionListener {
+        fun onListItemSelected(project: Project)
+    }
+
+    private var callback: OnInteractionListener? = null
+
     private val vm: ProjectVM by lazy { ViewModelProviders.of(activity).get(ProjectVM::class.java) }
+
     private lateinit var adapter: ProjectListAdapter
-    // private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +56,7 @@ class ProjectListFragment : Fragment() {
         this.adapter = ProjectListAdapter(
                 projects = emptyList<Project>(),
                 itemClick = { this.onItemClick(it) },
-                menuItemClick = { type, item -> this.onMenuItemClick(type, item) }
+                menuItemClick = { actionType, payload -> this.onMenuItemClick(actionType, payload) }
         )
 
         projectList.adapter = this.adapter
@@ -65,37 +72,45 @@ class ProjectListFragment : Fragment() {
         })
     }
 
-    fun onItemClick(project: Project) {
-        toast("Card ${project.id} clicked")
-    }
-
-    fun onMenuItemClick(type: String, project: Project) {
-        when (type) {
-            ProjectListAdapter.ViewHolder.TYPE_SHOW -> toast("Menu item clicked: show ${project.id}")
-            ProjectListAdapter.ViewHolder.TYPE_DELETE -> toast("Menu item clicked: delete ${project.id}")
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is OnInteractionListener) {
+            callback = context
+        } else {
+            throw RuntimeException(context!!.toString() + " must implement OnInteractionListener")
         }
     }
 
-//    override fun onAttach(context: Context?) {
-//        super.onAttach(context)
-//        if (context is OnFragmentInteractionListener) {
-//            listener = context
-//        } else {
-//            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-//        }
-//    }
-//
-//    override fun onDetach() {
-//        super.onDetach()
-//        listener = null
-//    }
+    override fun onDetach() {
+        super.onDetach()
+        callback = null
+    }
+
+    private fun onItemClick(project: Project) {
+        toast("Card ${project.id} clicked")
+        callback?.onListItemSelected(project)
+        vm.selectProject(project)
+    }
+
+    private fun onMenuItemClick(actionType: ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE, payload: Any) {
+        when (actionType) {
+            ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE.SHOW -> {
+                val project = payload as Project // Decode payload
+                toast("Menu item clicked: show ${project.id}")
+            }
+            ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE.DELETE -> {
+                val project = payload as Project // Decode payload
+                toast("Menu item clicked: delete ${project.id}")
+            }
+        }
+    }
 
     /**
      * A list adapter for ProjectListFragment.
      */
     class ProjectListAdapter(private var projects: List<Project> = emptyList(),
                              val itemClick: (project: Project) -> Unit,
-                             val menuItemClick: (type: String, project: Project) -> Unit
+                             val menuItemClick: (actionType: ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE, payload: Any) -> Unit
     ) : RecyclerView.Adapter<ProjectListAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -119,14 +134,11 @@ class ProjectListFragment : Fragment() {
          * https://developer.android.com/reference/android/support/v7/widget/RecyclerView.ViewHolder.html
          */
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            companion object {
-                val TYPE_SHOW = "TYPE_SHOW"
-                val TYPE_DELETE = "TYPE_DELETE"
-            }
+            enum class MENU_ACTION_TYPE { SHOW, DELETE }
 
             fun bind(project: Project,
                      itemClick: (project: Project) -> Unit,
-                     menuItemClick: (type: String, project: Project) -> Unit
+                     menuItemClick: (actionType: ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE, payload: Any) -> Unit
             ) = with(itemView) {
                 listItemProjectCard.setOnClickListener { itemClick(project) }
                 listItemProjectName.setText(project.name)
@@ -137,8 +149,8 @@ class ProjectListFragment : Fragment() {
                         inflate(R.menu.list_item_project)
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
-                                R.id.menu_item_list_item_project_add -> menuItemClick(TYPE_SHOW, project)
-                                R.id.menu_item_list_item_project_delete -> menuItemClick(TYPE_DELETE, project)
+                                R.id.menu_item_list_item_project_add -> menuItemClick(MENU_ACTION_TYPE.SHOW, project)
+                                R.id.menu_item_list_item_project_delete -> menuItemClick(MENU_ACTION_TYPE.DELETE, project)
                             }
                             false
                         }

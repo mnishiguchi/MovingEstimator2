@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mnishiguchi.movingestimator2.ui.ProjectListFragment">
+    tools:context=".ui.ProjectListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/projectList"
@@ -16,7 +16,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/emptyList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="16dp"
         android:visibility="gone">
 
