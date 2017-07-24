@@ -16,9 +16,11 @@ import android.view.ViewGroup
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.inflate
+import com.mnishiguchi.movingestimator2.util.log
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_list.*
 import kotlinx.android.synthetic.main.list_item_project.view.*
+import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.support.v4.toast
 
 class ProjectListFragment : Fragment() {
@@ -68,8 +70,30 @@ class ProjectListFragment : Fragment() {
         vm.projects.observe(activity as LifecycleOwner, Observer<List<Project>> {
             it?.let {
                 this.adapter.replaceDataSet(it)
+                setListVisibility()
             }
         })
+    }
+
+    override fun onResume() {
+        log("onResume")
+        super.onResume()
+
+        with(activity.toolbar) {
+            title = "Project"
+            subtitle = ""
+            disableHomeAsUp()
+            attachScroll(projectList)
+        }
+    }
+
+    override fun onPause() {
+        log("onPause")
+        super.onPause()
+
+        with(activity.toolbar) {
+            detachScroll(projectList)
+        }
     }
 
     override fun onAttach(context: Context?) {
@@ -102,6 +126,22 @@ class ProjectListFragment : Fragment() {
                 val project = payload as Project // Decode payload
                 toast("Menu item clicked: delete ${project.id}")
             }
+        }
+    }
+
+    /**
+     * Show the placeholder view if the list is empty.
+     */
+    private fun setListVisibility() {
+        // java.lang.NullPointerException: Attempt to invoke virtual method 'void android.support.v7.widget.RecyclerView.setVisibility(int)' on a null object reference
+        if (projectList == null || emptyList == null) return
+
+        if (vm.isEmpty()) {
+            projectList.visibility = View.GONE
+            emptyList.visibility = View.VISIBLE
+        } else {
+            projectList.visibility = View.VISIBLE
+            emptyList.visibility = View.GONE
         }
     }
 

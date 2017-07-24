@@ -52,5 +52,4 @@
             android:text="@string/options_icon_char"
             android:textAppearance="?android:textAppearanceLarge" />
     </RelativeLayout>
-
 </android.support.v7.widget.CardView>

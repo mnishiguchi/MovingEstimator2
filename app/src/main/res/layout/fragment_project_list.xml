@@ -9,7 +9,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/projectList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="?attr/actionBarSize" />
 
     <!-- Empty list -->
 
@@ -17,6 +19,7 @@
         android:id="@+id/emptyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:padding="16dp"
         android:visibility="gone">
 
@@ -37,5 +40,4 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_add" />
-
 </android.support.design.widget.CoordinatorLayout>

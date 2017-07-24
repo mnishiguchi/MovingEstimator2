@@ -12,8 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
+import com.mnishiguchi.movingestimator2.util.closeSoftKeyboard
+import com.mnishiguchi.movingestimator2.util.log
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_detail.*
+import kotlinx.android.synthetic.main.toolbar.*
+
 
 class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
 
@@ -34,6 +38,9 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Get a copy of the selected project. Assume that the selected project exists.
+        project = vm.selectedProject().value ?: throw RuntimeException("selectedProject does not exist")
     }
 
     // Inflate the layout for this fragment
@@ -45,31 +52,54 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Get a copy of the selected project. Assume that the selected project exists.
-        project = vm.selectedProject().value ?: throw RuntimeException("selectedProject does not exist")
+        with(projectDetailName) {
+            setText(project.name)
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    project.name = s.toString()
+                }
 
-        projectDetailName.setText(project.name)
-        projectDetailName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                project.name = s.toString()
-            }
-            override fun afterTextChanged(s: Editable?) {
-                vm.update(project)
-            }
-        })
+                override fun afterTextChanged(s: Editable?) {
+                    vm.update(project)
+                }
+            })
+        }
 
-        projectDetailDescription.setText(project.description)
-        projectDetailDescription.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                project.description = s.toString()
-            }
-            override fun afterTextChanged(s: Editable?) {
-                vm.update(project)
-            }
-        })
+        with(projectDetailDescription) {
+            setText(project.description)
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    project.description = s.toString()
+                }
 
-        projectDetailDate.setText(project.moveDate.toString())
+                override fun afterTextChanged(s: Editable?) {
+                    vm.update(project)
+                }
+            })
+        }
+
+        with(projectDetailDate) {
+            setText(project.moveDate.toString())
+        }
+    }
+
+    override fun onResume() {
+        log("onResume")
+        super.onResume()
+
+        with(activity.toolbar) {
+            title = project.name
+            subtitle = project.moveDate.toString()
+            enableHomeAsUp { activity.onBackPressed() }
+        }
+    }
+
+    override fun onPause() {
+        log("onPause")
+        super.onPause()
+
+        activity.closeSoftKeyboard()
     }
 }

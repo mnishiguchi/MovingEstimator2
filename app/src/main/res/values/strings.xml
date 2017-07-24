@@ -5,4 +5,5 @@
     <string name="project_detail_name">Project name</string>
     <string name="project_detail_description">Description</string>
     <string name="project_detail_move_date">Move date</string>
+    <string name="settings">Settings</string>
 </resources>

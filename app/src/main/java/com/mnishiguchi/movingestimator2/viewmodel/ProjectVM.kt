@@ -21,21 +21,21 @@ class ProjectVM(val dao: ProjectDao = App.database.projectDao()) : ViewModel() {
 
     private val currentProject = MutableLiveData<Project>()
 
-    init {
-        // Insert a fake data set into database
-        // https://github.com/blocoio/faker
-        val faker = Faker()
-        listOf(
-                Project(id = 1, name = faker.name.name(), description = faker.lorem.paragraph()),
-                Project(id = 2, name = faker.name.name(), description = faker.lorem.paragraph()),
-                Project(id = 3, name = faker.name.name(), description = faker.lorem.paragraph()),
-                Project(id = 4, name = faker.name.name(), description = faker.lorem.paragraph()),
-                Project(id = 5, name = faker.name.name(), description = faker.lorem.paragraph()),
-                Project(id = 6, name = faker.name.name(), description = faker.lorem.paragraph())
-        ).forEach { insert(it) }
-    }
+//    init {
+//        // Insert a fake data set into database
+//        // https://github.com/blocoio/faker
+//        val faker = Faker()
+//        listOf(
+//                Project(id = 1, name = faker.name.name(), description = faker.lorem.paragraph()),
+//                Project(id = 2, name = faker.name.name(), description = faker.lorem.paragraph()),
+//                Project(id = 3, name = faker.name.name(), description = faker.lorem.paragraph()),
+//                Project(id = 4, name = faker.name.name(), description = faker.lorem.paragraph()),
+//                Project(id = 5, name = faker.name.name(), description = faker.lorem.paragraph()),
+//                Project(id = 6, name = faker.name.name(), description = faker.lorem.paragraph())
+//        ).forEach { insert(it) }
+//    }
 
-    /* ==> Selected item */
+    /* ==> currentProject */
 
     fun selectProject(project: Project) {
         currentProject.value = project
@@ -43,13 +43,9 @@ class ProjectVM(val dao: ProjectDao = App.database.projectDao()) : ViewModel() {
 
     fun selectedProject(): LiveData<Project> = currentProject
 
-    /* ==> db read operations */
+    /* ==> projects */
 
-    fun find(id: Int): LiveData<List<Project>> = dao.find(id)
-
-    fun count(): Int = dao.count().toInt()
-
-    /* ==> db write operations */
+    fun isEmpty(): Boolean = projects.value?.isEmpty() ?: true
 
     fun create(): Project = Project().apply {
         val project = this
