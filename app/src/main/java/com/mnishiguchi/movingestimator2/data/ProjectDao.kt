@@ -15,7 +15,7 @@ interface ProjectDao {
 
     /* Queries */
 
-    @Query("SELECT * FROM projects")
+    @Query("SELECT * FROM projects ORDER BY id DESC")
     fun all(): LiveData<List<Project>>
 
     @Query("SELECT * FROM projects WHERE id = :arg0")

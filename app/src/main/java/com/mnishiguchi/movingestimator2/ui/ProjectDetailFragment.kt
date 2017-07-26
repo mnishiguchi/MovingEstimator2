@@ -62,6 +62,7 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
 
                 override fun afterTextChanged(s: Editable?) {
                     vm.update(project)
+                    activity.toolbar.title = project.name
                 }
             })
         }

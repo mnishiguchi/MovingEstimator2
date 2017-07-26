@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
@@ -13,6 +14,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.inflate
@@ -21,6 +23,7 @@ import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_list.*
 import kotlinx.android.synthetic.main.list_item_project.view.*
 import kotlinx.android.synthetic.main.toolbar.*
+import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
 
 class ProjectListFragment : Fragment() {
@@ -64,7 +67,10 @@ class ProjectListFragment : Fragment() {
         projectList.adapter = this.adapter
         projectList.layoutManager = LinearLayoutManager(activity)
 
-        fab.setOnClickListener { toast("fab clicked") }
+        fab.setOnClickListener {
+            vm.create()
+            projectList.layoutManager.scrollToPosition(0)
+        }
 
         // Update the adapter's data whenever data set is changed.
         vm.projects.observe(activity as LifecycleOwner, Observer<List<Project>> {
@@ -118,13 +124,15 @@ class ProjectListFragment : Fragment() {
 
     private fun onMenuItemClick(actionType: ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE, payload: Any) {
         when (actionType) {
-            ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE.SHOW -> {
-                val project = payload as Project // Decode payload
-                toast("Menu item clicked: show ${project.id}")
-            }
             ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE.DELETE -> {
                 val project = payload as Project // Decode payload
-                toast("Menu item clicked: delete ${project.id}")
+                val name = if (project.name.isBlank()) "a project" else project.name
+                AlertDialog.Builder(ctx)
+                        .setTitle("Deleting $name (id: ${project.id})")
+                        .setMessage("Are you sure?")
+                        .setPositiveButton("Yes") { _, _ -> vm.destroy(project) { toast("Deleted $name") } }
+                        .setNegativeButton("No") { _, _ -> }
+                        .show()
             }
         }
     }
@@ -174,22 +182,29 @@ class ProjectListFragment : Fragment() {
          * https://developer.android.com/reference/android/support/v7/widget/RecyclerView.ViewHolder.html
          */
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            enum class MENU_ACTION_TYPE { SHOW, DELETE }
+            enum class MENU_ACTION_TYPE { DELETE }
 
             fun bind(project: Project,
                      itemClick: (project: Project) -> Unit,
                      menuItemClick: (actionType: ProjectListAdapter.ViewHolder.MENU_ACTION_TYPE, payload: Any) -> Unit
             ) = with(itemView) {
                 listItemProjectCard.setOnClickListener { itemClick(project) }
-                listItemProjectName.setText(project.name)
-                listItemProjectDescription.setText(project.description)
-                listItemProjectMoveDate.setText(project.moveDate.toString())
+                listItemProjectName.apply {
+                    text = if (project.name.isBlank())
+                        App.instance.getString(android.R.string.untitled)
+                    else
+                        project.name
+                }
+                listItemProjectDescription.apply {
+                    text = project.description
+                    visibility = if (project.description.isBlank()) View.GONE else View.VISIBLE
+                }
+                listItemProjectMoveDate.text = project.moveDate.toString()
                 listItemProjectPopupTrigger.setOnClickListener {
                     PopupMenu(context, listItemProjectPopupTrigger, Gravity.RIGHT).apply {
                         inflate(R.menu.list_item_project)
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
-                                R.id.menu_item_list_item_project_add -> menuItemClick(MENU_ACTION_TYPE.SHOW, project)
                                 R.id.menu_item_list_item_project_delete -> menuItemClick(MENU_ACTION_TYPE.DELETE, project)
                             }
                             false
