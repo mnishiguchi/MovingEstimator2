@@ -1,8 +1,10 @@
 package com.mnishiguchi.movingestimator2.ui
 
+import android.app.Activity
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -10,6 +12,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.closeSoftKeyboard
@@ -17,7 +20,8 @@ import com.mnishiguchi.movingestimator2.util.log
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_detail.*
 import kotlinx.android.synthetic.main.toolbar.*
-
+import org.jetbrains.anko.support.v4.ctx
+import java.util.*
 
 class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
 
@@ -27,6 +31,9 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
     override fun getLifecycle(): LifecycleRegistry = lifecycleRegistry
 
     companion object {
+        val DIALOG_DATE = "DIALOG_DATE"
+        val REQUEST_DATE = 0
+
         fun newInstance(): ProjectDetailFragment {
             return ProjectDetailFragment()
         }
@@ -52,8 +59,13 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(projectDetailName) {
-            setText(project.name)
+        activity.toolbar.apply {
+            title = project.name
+            enableHomeAsUp { activity.onBackPressed() }
+        }
+
+        projectDetailName.apply {
+            setText(project.name) // Editable
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -67,8 +79,8 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
             })
         }
 
-        with(projectDetailDescription) {
-            setText(project.description)
+        projectDetailDescription.apply {
+            setText(project.description) // Editable
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -81,20 +93,16 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
             })
         }
 
-        with(projectDetailDate) {
-            setText(project.moveDate.toString())
+        projectDetailDate.apply {
+            setOnClickListener { startDatePickerForResult() }
         }
+
+        updateDateUI()
     }
 
     override fun onResume() {
         log("onResume")
         super.onResume()
-
-        with(activity.toolbar) {
-            title = project.name
-            subtitle = project.moveDate.toString()
-            enableHomeAsUp { activity.onBackPressed() }
-        }
     }
 
     override fun onPause() {
@@ -102,5 +110,42 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
         super.onPause()
 
         activity.closeSoftKeyboard()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK) {
+            log("Result was non-OK")
+            return
+        }
+
+        when (requestCode) {
+            REQUEST_DATE -> {
+                data?.let {
+                    project.moveDate = DatePickerFragment.dateResult(data).time // In-memory
+                    vm.update(project) // DB
+                    updateDateUI() // UI
+                }
+            }
+        }
+    }
+
+    private fun startDatePickerForResult() {
+        val dialog = DatePickerFragment.newInstance(Date(project.moveDate))
+        dialog.setTargetFragment(this, REQUEST_DATE)
+        dialog.show(activity.supportFragmentManager, DIALOG_DATE)
+    }
+
+    /**
+     * Update the date text.
+     */
+    private fun updateDateUI() {
+        val stringResId = if (project.moveDate > Date().time) R.string.moving_on else R.string.moved_on
+
+        ctx.getString(stringResId, App.mediumDateFormat.format(project.moveDate)).apply {
+            projectDetailDate.text = this
+            activity.toolbar.subtitle = this
+        }
     }
 }

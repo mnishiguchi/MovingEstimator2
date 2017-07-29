@@ -6,4 +6,8 @@
     <string name="project_detail_description">Description</string>
     <string name="project_detail_move_date">Move date</string>
     <string name="settings">Settings</string>
+
+    <string name="toolbar_title_projects">Projects</string>
+    <string name="moving_on">Moving on %1$s</string>
+    <string name="moved_on">Moved on %1$s</string>
 </resources>

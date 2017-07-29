@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:text="@string/project_detail_move_date" />
 
-    <EditText
+    <Button
         android:id="@+id/projectDetailDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

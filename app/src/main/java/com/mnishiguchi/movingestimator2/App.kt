@@ -2,6 +2,9 @@ package com.mnishiguchi.movingestimator2
 
 import android.app.Application
 import com.mnishiguchi.movingestimator2.data.AppDatabase
+import com.mnishiguchi.movingestimator2.util.dateFormat
+import com.mnishiguchi.movingestimator2.util.longDateFormat
+import com.mnishiguchi.movingestimator2.util.mediumDateFormat
 
 /**
  * An application singleton that allows us to have an easier access to the application context.
@@ -12,6 +15,9 @@ class App : Application() {
         lateinit var instance: App
             private set
         val database: AppDatabase by lazy { AppDatabase.createPersistentDatabase(instance) }
+        val dateFormat: java.text.DateFormat by lazy { instance.dateFormat() }
+        val mediumDateFormat: java.text.DateFormat by lazy { instance.mediumDateFormat() }
+        val longDateFormat: java.text.DateFormat by lazy { instance.longDateFormat() }
     }
 
     override fun onCreate() {

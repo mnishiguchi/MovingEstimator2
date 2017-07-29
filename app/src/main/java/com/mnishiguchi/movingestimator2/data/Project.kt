@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
+val ONE_MONTH_IN_MILLIS = 2.628e+9.toLong()
+
 @Entity(tableName = "projects")
 data class Project(
         // https://developer.android.com/reference/android/arch/persistence/room/PrimaryKey.html#autoGenerate()
@@ -18,5 +20,5 @@ data class Project(
         var description: String = "",
 
         @ColumnInfo(name = "move_date")
-        var moveDate: Long = Date().time
+        var moveDate: Long = Date().time + ONE_MONTH_IN_MILLIS
 )

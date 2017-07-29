@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.log
+import org.jetbrains.anko.ctx
 import org.jetbrains.anko.find
 
 class ProjectActivity : SingleFragmentActivity(), ProjectListFragment.OnInteractionListener, ToolbarManager {
@@ -20,7 +21,7 @@ class ProjectActivity : SingleFragmentActivity(), ProjectListFragment.OnInteract
         super.onCreate(savedInstanceState)
 
         initToolbar()
-        toolbar.title = "Projects"
+        title = ctx.getString(R.string.toolbar_title_projects)
     }
 
     override fun onListItemSelected(project: Project) {
