@@ -16,6 +16,7 @@ import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.closeSoftKeyboard
+import com.mnishiguchi.movingestimator2.util.enableHomeAsUp
 import com.mnishiguchi.movingestimator2.util.log
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_detail.*
@@ -141,11 +142,12 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
      * Update the date text.
      */
     private fun updateDateUI() {
-        val stringResId = if (project.moveDate > Date().time) R.string.moving_on else R.string.moved_on
+        val stringResId = if (project.moveDate > Date().time) R.string.moved_on else R.string.moving_on
 
-        ctx.getString(stringResId, App.mediumDateFormat.format(project.moveDate)).apply {
-            projectDetailDate.text = this
-            activity.toolbar.subtitle = this
-        }
+        val dateString =  ctx.getString(stringResId, App.longDateFormat.format(project.moveDate))
+
+        projectDetailDate.text = dateString
+        activity.toolbar.subtitle = dateString
+
     }
 }

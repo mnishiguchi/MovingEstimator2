@@ -10,22 +10,18 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
-import com.mnishiguchi.movingestimator2.util.ctx
-import com.mnishiguchi.movingestimator2.util.inflate
-import com.mnishiguchi.movingestimator2.util.log
+import com.mnishiguchi.movingestimator2.util.*
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_list.*
 import kotlinx.android.synthetic.main.list_item_project.view.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.toast
 import java.util.*
 
 class ProjectListFragment : Fragment() {
@@ -49,6 +45,9 @@ class ProjectListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Tell the FragmentManager that this fragment need its onCreateOptionsMenu to be called.
+        setHasOptionsMenu(true)
     }
 
     // Inflate the layout for this fragment
@@ -116,6 +115,23 @@ class ProjectListFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         callback = null
+    }
+
+    // Create menu items for this fragment.
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_project_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_project_list_sort -> {
+                // TODO - Sort the list
+                ctx.toast("menu_item_project_list_sort")
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     private fun selectProject(project: Project) {
@@ -217,8 +233,8 @@ class ProjectListFragment : Fragment() {
                         inflate(R.menu.list_item_project)
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
-                                R.id.menu_item_list_item_project_show -> menuItemClick(MENU_ACTION_TYPE.SHOW, project)
-                                R.id.menu_item_list_item_project_delete -> menuItemClick(MENU_ACTION_TYPE.DELETE, project)
+                                R.id.menu_item_project_list_popup_show -> menuItemClick(MENU_ACTION_TYPE.SHOW, project)
+                                R.id.menu_item_project_list_popup_delete -> menuItemClick(MENU_ACTION_TYPE.DELETE, project)
                             }
                             false
                         }

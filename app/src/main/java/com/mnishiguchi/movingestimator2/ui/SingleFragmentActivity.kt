@@ -7,7 +7,14 @@ import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import com.mnishiguchi.movingestimator2.R
+import org.jetbrains.anko.ctx
+import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
+
 
 /**
  * A generic activity superclass for hosting a single fragment.
@@ -39,6 +46,11 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
 
+        // Set our custom toolbar as the Activity's action bar.
+        // https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
+        // https://developer.android.com/reference/android/support/v7/app/AppCompatActivity.html#setSupportActionBar(android.support.v7.widget.Toolbar)
+        setSupportActionBar(find<Toolbar>(R.id.toolbar))
+
         // Use supportFragmentManager because we are using the support library fragments.
         val fm = supportFragmentManager
 
@@ -47,9 +59,9 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
         if (findFragment(fm) == null) registerFragment(fm)
     }
 
-        // A container view ID serves two purposes:
-        // 1. Tells the FragmentManager where in the activity's view the fragment's view should appear.
-        // 2. Used as a unique identifier for a fragment in the FragmentManager's list.
+    // A container view ID serves two purposes:
+    // 1. Tells the FragmentManager where in the activity's view the fragment's view should appear.
+    // 2. Used as a unique identifier for a fragment in the FragmentManager's list.
 
     // Find a fragment instance in a fragment manager's list.
     private fun findFragment(fm: FragmentManager): Fragment? {
@@ -61,6 +73,27 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
         fm.beginTransaction()
                 .add(R.id.fragment_container, createFragment())
                 .commit()
+    }
+
+    // Create common menu items.
+    // https://developer.android.com/guide/topics/ui/menus.html#options-menu
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    // https://developer.android.com/guide/topics/ui/menus.html#RespondingOptionsMenu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_settings -> {
+                // TODO - Start the settings activity
+                // toolbar.ctx.startActivity<SettingsActivity>()
+                ctx.toast("menu_item_settings")
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 }
 
