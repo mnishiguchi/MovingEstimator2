@@ -15,7 +15,6 @@ import org.jetbrains.anko.ctx
 import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
 
-
 /**
  * A generic activity superclass for hosting a single fragment.
  * We need to subclass a subclass of android.support.v4.app.FragmentActivity, so that we can use:

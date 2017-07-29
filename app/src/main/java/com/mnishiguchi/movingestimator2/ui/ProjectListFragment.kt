@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.list_item_project.view.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.toast
 import java.util.*
 
 class ProjectListFragment : Fragment() {
@@ -125,9 +124,12 @@ class ProjectListFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_project_list_sort -> {
-                // TODO - Sort the list
-                ctx.toast("menu_item_project_list_sort")
+            R.id.menu_item_project_list_sort_by_name -> {
+                this.adapter.sortByName()
+                return true
+            }
+            R.id.menu_item_project_list_sort_by_move_date -> {
+                this.adapter.sortByMoveDate()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -195,6 +197,34 @@ class ProjectListFragment : Fragment() {
 
         fun replaceDataSet(projects: List<Project>) {
             this.projects = projects
+            notifyDataSetChanged()
+        }
+
+        /**
+         * Sort the list by name. Toggle ascending and descending order.
+         */
+        fun sortByName() {
+            val isDesc: Boolean = this.projects.first().name > this.projects.last().name
+            this.projects = if (isDesc) {
+                projects.sortedWith(compareBy(Project::name))
+            } else {
+                projects.sortedWith(compareByDescending(Project::name))
+            }
+
+            notifyDataSetChanged()
+        }
+
+        /**
+         * Sort the list by move date. Toggle ascending and descending order.
+         */
+        fun sortByMoveDate() {
+            val isDesc: Boolean = this.projects.first().moveDate > this.projects.last().moveDate
+            this.projects = if (isDesc) {
+                projects.sortedWith(compareBy(Project::moveDate))
+            } else {
+                projects.sortedWith(compareByDescending(Project::moveDate))
+            }
+
             notifyDataSetChanged()
         }
 
