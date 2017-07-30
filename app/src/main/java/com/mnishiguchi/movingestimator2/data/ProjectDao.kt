@@ -1,15 +1,8 @@
 package com.mnishiguchi.movingestimator2.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.OnConflictStrategy.REPLACE
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 
-/**
- * Created by masa on 7/21/17.
- */
 @Dao
 interface ProjectDao {
 
@@ -21,13 +14,16 @@ interface ProjectDao {
     @Query("SELECT * FROM projects WHERE id = :arg0")
     fun find(id: Int): LiveData<List<Project>>
 
-    @Query("SELECT COUNT(*) FROM projects")
-    fun count(): Long
+    @Query("SELECT * FROM packs WHERE project_id = :arg0 ORDER BY id DESC")
+    fun packs(projectId: Int): LiveData<List<Pack>>
 
     /* Mutations */
 
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(project: Project): Long // Id
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPack(pack: Pack): Long
 
     @Delete
     fun delete(project: Project): Int // Number of deleted rows

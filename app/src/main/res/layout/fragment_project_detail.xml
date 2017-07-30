@@ -8,14 +8,14 @@
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:layout_marginTop="?attr/actionBarSize"
     android:orientation="vertical"
-    tools:context=".ui.ProjectDetailFragment">
+    tools:context=".ui.ProjectFragment">
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/project_detail_name" />
+        android:text="@string/project_name" />
 
     <EditText
         android:id="@+id/projectDetailName"
@@ -23,13 +23,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:hint="@string/project_detail_name" />
+        android:hint="@string/project_name" />
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/project_detail_description" />
+        android:text="@string/project_description" />
 
     <EditText
         android:id="@+id/projectDetailDescription"
@@ -37,13 +37,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:hint="@string/project_detail_description" />
+        android:hint="@string/project_description" />
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/project_detail_move_date" />
+        android:text="@string/project_move_date" />
 
     <Button
         android:id="@+id/projectDetailDate"
@@ -51,5 +51,17 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:hint="@string/project_detail_move_date" />
+        android:hint="@string/project_move_date" />
+
+    <TextView
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/project_items" />
+
+    <fragment
+        android:id="@+id/fragment_container_pack_list"
+        android:name="com.mnishiguchi.movingestimator2.ui.PackListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

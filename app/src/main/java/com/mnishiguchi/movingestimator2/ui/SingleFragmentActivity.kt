@@ -5,7 +5,6 @@ import android.arch.lifecycle.LifecycleRegistryOwner
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -55,24 +54,16 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
 
         // Register a fragment to the fragment manager if not already.
         // NOTE: Never add the same fragment twice!
-        if (findFragment(fm) == null) registerFragment(fm)
+        if (fm.findFragmentById(R.id.fragment_container) == null) {
+            fm.beginTransaction()
+                    .add(R.id.fragment_container, createFragment())
+                    .commit()
+        }
     }
 
     // A container view ID serves two purposes:
     // 1. Tells the FragmentManager where in the activity's view the fragment's view should appear.
     // 2. Used as a unique identifier for a fragment in the FragmentManager's list.
-
-    // Find a fragment instance in a fragment manager's list.
-    private fun findFragment(fm: FragmentManager): Fragment? {
-        return fm.findFragmentById(R.id.fragment_container)
-    }
-
-    // Create a new fragment instance and register it to a fragment manager.
-    private fun registerFragment(fm: FragmentManager) {
-        fm.beginTransaction()
-                .add(R.id.fragment_container, createFragment())
-                .commit()
-    }
 
     // Create common menu items.
     // https://developer.android.com/guide/topics/ui/menus.html#options-menu

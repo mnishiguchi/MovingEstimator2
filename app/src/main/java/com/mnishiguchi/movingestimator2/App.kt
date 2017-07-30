@@ -14,7 +14,9 @@ class App : Application() {
     companion object {
         lateinit var instance: App
             private set
+
         val database: AppDatabase by lazy { AppDatabase.createPersistentDatabase(instance) }
+
         val dateFormat: java.text.DateFormat by lazy { instance.dateFormat() }
         val mediumDateFormat: java.text.DateFormat by lazy { instance.mediumDateFormat() }
         val longDateFormat: java.text.DateFormat by lazy { instance.longDateFormat() }

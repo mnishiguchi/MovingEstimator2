@@ -9,9 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
@@ -22,9 +20,10 @@ import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
 import kotlinx.android.synthetic.main.fragment_project_detail.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.support.v4.ctx
+import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
-class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
+class ProjectFragment : Fragment(), LifecycleRegistryOwner {
 
     // https://developer.android.com/reference/android/arch/lifecycle/LifecycleRegistryOwner.html
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -35,8 +34,8 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
         val DIALOG_DATE = "DIALOG_DATE"
         val REQUEST_DATE = 0
 
-        fun newInstance(): ProjectDetailFragment {
-            return ProjectDetailFragment()
+        fun newInstance(): ProjectFragment {
+            return ProjectFragment()
         }
     }
 
@@ -47,8 +46,11 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Tell the FragmentManager that this fragment need its onCreateOptionsMenu to be called.
+        setHasOptionsMenu(true)
+
         // Get a copy of the selected project. Assume that the selected project exists.
-        project = vm.selectedProject().value ?: throw RuntimeException("selectedProject does not exist")
+        project = vm.selectedProject().value ?: throw IllegalArgumentException("project must be present")
     }
 
     // Inflate the layout for this fragment
@@ -113,6 +115,22 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
         activity.closeSoftKeyboard()
     }
 
+    // Create menu items for this fragment.
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_project_detail, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_project_detail_add_package -> {
+                toast("menu_item_project_detail_add_package")
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -142,12 +160,10 @@ class ProjectDetailFragment : Fragment(), LifecycleRegistryOwner {
      * Update the date text.
      */
     private fun updateDateUI() {
-        val stringResId = if (project.moveDate > Date().time) R.string.moved_on else R.string.moving_on
-
-        val dateString =  ctx.getString(stringResId, App.longDateFormat.format(project.moveDate))
+        val stringResId = if (project.moveDate > Date().time) R.string.moving_on else R.string.moved_on
+        val dateString = ctx.getString(stringResId, App.longDateFormat.format(project.moveDate))
 
         projectDetailDate.text = dateString
         activity.toolbar.subtitle = dateString
-
     }
 }

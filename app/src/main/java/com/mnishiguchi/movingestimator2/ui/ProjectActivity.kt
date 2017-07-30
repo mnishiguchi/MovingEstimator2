@@ -18,7 +18,7 @@ class ProjectActivity : SingleFragmentActivity(), ProjectListFragment.OnInteract
     override fun onListItemSelected(project: Project) {
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment_container, ProjectDetailFragment.newInstance())
+                .replace(R.id.fragment_container, ProjectFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
     }

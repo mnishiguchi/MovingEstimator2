@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.mnishiguchi.movingestimator2.App
+import com.mnishiguchi.movingestimator2.data.Pack
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.data.ProjectDao
 import io.bloco.faker.Faker
@@ -21,19 +22,23 @@ class ProjectVM(val dao: ProjectDao = App.database.projectDao()) : ViewModel() {
 
     private val currentProject = MutableLiveData<Project>()
 
-//    init {
-//        // Insert a fake data set into database
-//        // https://github.com/blocoio/faker
-//        val faker = Faker()
-//        listOf(
-//                Project(id = 1, name = faker.name.name(), description = faker.lorem.paragraph()),
-//                Project(id = 2, name = faker.name.name(), description = faker.lorem.paragraph()),
-//                Project(id = 3, name = faker.name.name(), description = faker.lorem.paragraph()),
-//                Project(id = 4, name = faker.name.name(), description = faker.lorem.paragraph()),
-//                Project(id = 5, name = faker.name.name(), description = faker.lorem.paragraph()),
-//                Project(id = 6, name = faker.name.name(), description = faker.lorem.paragraph())
-//        ).forEach { insert(it) }
-//    }
+    init {
+        // Insert a fake data set into database
+        // https://github.com/blocoio/faker
+        val faker = Faker()
+
+        // Fake projects
+        for (i in 1..6) {
+            insert(Project(id = i, name = faker.address.country(), description = faker.lorem.paragraph()))
+        }
+
+        // Fake packs
+        for (i in 1..6) {
+            for (j in 1..6) {
+                insert(Pack(projectId = i, name = faker.commerce.productName()))
+            }
+        }
+    }
 
     /* ==> currentProject */
 
@@ -64,6 +69,10 @@ class ProjectVM(val dao: ProjectDao = App.database.projectDao()) : ViewModel() {
         doAsync { dao.insert(project) }
     }
 
+    fun insert(pack: Pack) {
+        doAsync { dao.insertPack(pack) }
+    }
+
     fun update(project: Project) {
         insert(project)
     }
@@ -88,4 +97,8 @@ class ProjectVM(val dao: ProjectDao = App.database.projectDao()) : ViewModel() {
             uiThread { onDestroy(count) }
         }
     }
+
+    /* ==> packs */
+
+    fun packs(projectId: Int): LiveData<List<Pack>> = dao.packs(projectId)
 }
