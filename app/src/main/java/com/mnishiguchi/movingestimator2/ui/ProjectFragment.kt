@@ -12,12 +12,13 @@ import android.text.TextWatcher
 import android.view.*
 import com.mnishiguchi.movingestimator2.App
 import com.mnishiguchi.movingestimator2.R
+import com.mnishiguchi.movingestimator2.data.Pack
 import com.mnishiguchi.movingestimator2.data.Project
 import com.mnishiguchi.movingestimator2.util.closeSoftKeyboard
 import com.mnishiguchi.movingestimator2.util.enableHomeAsUp
 import com.mnishiguchi.movingestimator2.util.log
 import com.mnishiguchi.movingestimator2.viewmodel.ProjectVM
-import kotlinx.android.synthetic.main.fragment_project_detail.*
+import kotlinx.android.synthetic.main.fragment_project.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
@@ -42,6 +43,7 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
     private val vm: ProjectVM by lazy { ViewModelProviders.of(activity).get(ProjectVM::class.java) }
 
     private lateinit var project: Project
+    private lateinit var packs: List<Pack>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +53,16 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
 
         // Get a copy of the selected project. Assume that the selected project exists.
         project = vm.selectedProject().value ?: throw IllegalArgumentException("project must be present")
+
+        // Set PackListFragment
+        childFragmentManager.beginTransaction()
+                .add(R.id.fragment_container_pack_list, PackListFragment.newInstance())
+                .commit()
     }
 
     // Inflate the layout for this fragment
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_project_detail, container, false)
+        return inflater.inflate(R.layout.fragment_project, container, false)
     }
 
     // Set up sub-views
@@ -67,7 +74,7 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
             enableHomeAsUp { activity.onBackPressed() }
         }
 
-        projectDetailName.apply {
+        projectName.apply {
             setText(project.name) // Editable
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -82,7 +89,7 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
             })
         }
 
-        projectDetailDescription.apply {
+        projectDescription.apply {
             setText(project.description) // Editable
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -96,7 +103,7 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
             })
         }
 
-        projectDetailDate.apply {
+        projectDate.apply {
             setOnClickListener { startDatePickerForResult() }
         }
 
@@ -118,12 +125,12 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
     // Create menu items for this fragment.
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.fragment_project_detail, menu)
+        inflater.inflate(R.menu.fragment_project, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_project_detail_add_package -> {
+            R.id.menu_item_project_add_package -> {
                 toast("menu_item_project_detail_add_package")
                 return true
             }
@@ -163,7 +170,7 @@ class ProjectFragment : Fragment(), LifecycleRegistryOwner {
         val stringResId = if (project.moveDate > Date().time) R.string.moving_on else R.string.moved_on
         val dateString = ctx.getString(stringResId, App.longDateFormat.format(project.moveDate))
 
-        projectDetailDate.text = dateString
+        projectDate.text = dateString
         activity.toolbar.subtitle = dateString
     }
 }
