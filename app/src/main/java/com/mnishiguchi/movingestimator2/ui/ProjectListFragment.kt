@@ -5,7 +5,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
@@ -23,7 +22,8 @@ import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
-class ProjectListFragment : Fragment() {
+class ProjectListFragment : BaseFragment() {
+
     companion object {
         fun newInstance(): ProjectListFragment {
             return ProjectListFragment()
@@ -55,7 +55,7 @@ class ProjectListFragment : Fragment() {
     }
 
     // Set up sub-views
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.adapter = ProjectListAdapter(
@@ -73,7 +73,7 @@ class ProjectListFragment : Fragment() {
         }
 
         // Update the adapter's data whenever data set is changed.
-        vm.projects.observe(activity as LifecycleOwner, Observer<List<Project>> {
+        vm.getProjects().observe(activity as LifecycleOwner, Observer<List<Project>> {
             it?.let {
                 this.adapter.replaceDataSet(it)
                 setListVisibility()
@@ -82,19 +82,17 @@ class ProjectListFragment : Fragment() {
     }
 
     override fun onResume() {
-        log("onResume")
         super.onResume()
 
         activity.toolbar.apply {
             title = ctx.getString(R.string.toolbar_title_projects)
             subtitle = ""
-            disableHomeAsUp()
             attachScroll(projectList)
+            disableHomeAsUp() // Remove the up button.
         }
     }
 
     override fun onPause() {
-        log("onPause")
         super.onPause()
 
         activity.toolbar.apply {
@@ -168,11 +166,11 @@ class ProjectListFragment : Fragment() {
         if (projectList == null || emptyList == null) return
 
         if (vm.isEmpty()) {
-            projectList.visibility = View.GONE
-            emptyList.visibility = View.VISIBLE
+            projectList.gone()
+            emptyList.visible()
         } else {
-            projectList.visibility = View.VISIBLE
-            emptyList.visibility = View.GONE
+            projectList.visible()
+            emptyList.gone()
         }
     }
 
@@ -250,7 +248,7 @@ class ProjectListFragment : Fragment() {
 
                 listItemProjectDescription.apply {
                     text = project.description
-                    visibility = if (project.description.isBlank()) View.GONE else View.VISIBLE
+                    if (project.description.isBlank()) gone() else visible()
                 }
 
                 listItemProjectMoveDate.apply {

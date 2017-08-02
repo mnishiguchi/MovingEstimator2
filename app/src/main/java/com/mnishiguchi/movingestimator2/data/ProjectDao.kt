@@ -14,16 +14,13 @@ interface ProjectDao {
     @Query("SELECT * FROM projects WHERE id = :arg0")
     fun find(id: Int): LiveData<List<Project>>
 
-    @Query("SELECT * FROM packs WHERE project_id = :arg0 ORDER BY id DESC")
-    fun packs(projectId: Int): LiveData<List<Pack>>
+    @Query("SELECT COUNT(*) FROM projects")
+    fun countAll(): Long
 
     /* Mutations */
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(project: Project): Long // Id
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPack(pack: Pack): Long
 
     @Delete
     fun delete(project: Project): Int // Number of deleted rows

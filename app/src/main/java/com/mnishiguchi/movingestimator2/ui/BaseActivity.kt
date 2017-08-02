@@ -10,9 +10,8 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.mnishiguchi.movingestimator2.R
-import org.jetbrains.anko.ctx
-import org.jetbrains.anko.find
-import org.jetbrains.anko.toast
+import com.mnishiguchi.movingestimator2.util.log
+import org.jetbrains.anko.*
 
 /**
  * A generic activity superclass for hosting a single fragment.
@@ -21,7 +20,7 @@ import org.jetbrains.anko.toast
  *   + cross-api-version toolbar
  * https://developer.android.com/reference/android/support/v7/app/AppCompatActivity.html
  */
-abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOwner {
+abstract class BaseActivity : AppCompatActivity(), LifecycleRegistryOwner, AnkoLogger {
 
     // https://developer.android.com/reference/android/arch/lifecycle/LifecycleRegistryOwner.html
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -35,12 +34,14 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
     protected open fun getLayoutResId(): Int = R.layout.activity_fragment
 
     /**
-     * Subclasses of [SingleFragmentActivity] must implement this method.
+     * Subclasses of [BaseActivity] must implement this method.
      * @return An instance of the fragment that the activity is hosting.
      */
     abstract fun createFragment(): Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        info("onCreate")
+
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
 
@@ -59,11 +60,26 @@ abstract class SingleFragmentActivity : AppCompatActivity(), LifecycleRegistryOw
                     .add(R.id.fragment_container, createFragment())
                     .commit()
         }
+
+        // A container view ID serves two purposes:
+        // 1. Tells the FragmentManager where in the activity's view the fragment's view should appear.
+        // 2. Used as a unique identifier for a fragment in the FragmentManager's list.
     }
 
-    // A container view ID serves two purposes:
-    // 1. Tells the FragmentManager where in the activity's view the fragment's view should appear.
-    // 2. Used as a unique identifier for a fragment in the FragmentManager's list.
+    override fun onResume() {
+        info("onResume")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        info("onPause")
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        info("onDestroy")
+        super.onDestroy()
+    }
 
     // Create common menu items.
     // https://developer.android.com/guide/topics/ui/menus.html#options-menu

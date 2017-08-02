@@ -14,6 +14,7 @@ import android.content.Context
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
+    abstract fun packDao(): PackDao
 
     companion object {
         private const val DB_NAME = "app.db"

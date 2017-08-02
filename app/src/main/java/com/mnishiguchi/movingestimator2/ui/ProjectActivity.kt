@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Project
 
-class ProjectActivity : SingleFragmentActivity(), ProjectListFragment.OnInteractionListener {
+class ProjectActivity : BaseActivity(), ProjectListFragment.OnInteractionListener {
 
     override fun createFragment(): Fragment {
         return ProjectListFragment.newInstance()
@@ -16,8 +16,7 @@ class ProjectActivity : SingleFragmentActivity(), ProjectListFragment.OnInteract
     }
 
     override fun onListItemSelected(project: Project) {
-        supportFragmentManager
-                .beginTransaction()
+        supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ProjectFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
