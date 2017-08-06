@@ -1,7 +1,5 @@
 package com.mnishiguchi.movingestimator2.ui
 
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -15,11 +13,13 @@ import com.mnishiguchi.movingestimator2.R
 import com.mnishiguchi.movingestimator2.data.Pack
 import com.mnishiguchi.movingestimator2.util.*
 import com.mnishiguchi.movingestimator2.viewmodel.PackVM
+import io.bloco.faker.Faker
 import kotlinx.android.synthetic.main.fragment_pack_list.*
 import kotlinx.android.synthetic.main.list_item_pack.view.*
 import kotlinx.android.synthetic.main.toolbar.*
-import org.jetbrains.anko.info
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.uiThread
 
 /**
  * A fragment representing a list of Pack.
@@ -58,9 +58,9 @@ class PackListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up the RecyclerView with no data
+        // Set up the RecyclerView
         // TODO - Add click listeners
-        this.adapter = PackListAdapter()
+        this.adapter = PackListAdapter(packs = emptyList())
         packList.adapter = this.adapter
         packList.layoutManager = LinearLayoutManager(activity)
 
@@ -75,21 +75,41 @@ class PackListFragment : BaseFragment() {
 
             packList.layoutManager.scrollToPosition(0)
         }
+
+        // Create fake data.
+        doAsync {
+            val faker = Faker()
+            val fakePacks = listOf(
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence()),
+                    Pack(name = faker.commerce.productName(), description = faker.lorem.sentence())
+            )
+            uiThread {
+                this@PackListFragment.adapter.replaceDataSet(fakePacks)
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Update the UI when the data is updated.
-        val packsChangedObserver = Observer<List<Pack>> {
-            it?.let {
-                info("data provided: $it")
-
-                this.adapter.replaceDataSet(it)
-                setListVisibility()
-            }
-        }
-        vm.getPacks().observe(this as LifecycleOwner, packsChangedObserver)
+//        // Update the UI when the data is updated.
+//        val packsChangedObserver = Observer<List<Pack>> {
+//            it?.let {
+//                info("data provided: $it")
+//
+//                this.adapter.replaceDataSet(it)
+//                setListVisibility()
+//            }
+//        }
+//        vm.getPacks().observe(this as LifecycleOwner, packsChangedObserver)
     }
 
     override fun onResume() {
@@ -99,16 +119,11 @@ class PackListFragment : BaseFragment() {
             title = ctx.getString(R.string.project_packs)
             subtitle = ""
             enableHomeAsUp { activity.onBackPressed() }
-            attachScroll(packList)
         }
     }
 
     override fun onPause() {
         super.onPause()
-
-        activity.toolbar.apply {
-            detachScroll(packList)
-        }
     }
 
     override fun onAttach(context: Context?) {
@@ -165,6 +180,10 @@ class PackListFragment : BaseFragment() {
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             fun bind(pack: Pack) = with(itemView) {
                 listItemPackName.text = pack.name
+                listItemPackSize.text = pack.volume.toString()
+                listItemPackQuantity.text = pack.quantity.toString()
+                listItemPackRoom.text = ""
+                listItemPackComment.text = pack.description
             }
         }
     }

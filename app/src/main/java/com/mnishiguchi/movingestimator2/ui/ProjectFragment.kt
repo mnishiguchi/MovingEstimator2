@@ -30,9 +30,7 @@ class ProjectFragment : BaseFragment() {
         val DIALOG_DATE = "DIALOG_DATE"
         val REQUEST_DATE = 0
 
-        fun newInstance(): ProjectFragment {
-            return ProjectFragment()
-        }
+        fun newInstance(): ProjectFragment = ProjectFragment()
     }
 
     private val vm: ProjectVM by lazy { ViewModelProviders.of(activity).get(ProjectVM::class.java) }
@@ -64,7 +62,6 @@ class ProjectFragment : BaseFragment() {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    vm.update(project)
                     activity.toolbar.title = project.name
                 }
             })
@@ -77,9 +74,7 @@ class ProjectFragment : BaseFragment() {
                     project.description = s.toString()
                 }
 
-                override fun afterTextChanged(s: Editable?) {
-                    vm.update(project)
-                }
+                override fun afterTextChanged(s: Editable?) {}
             })
         }
 
@@ -120,6 +115,7 @@ class ProjectFragment : BaseFragment() {
     override fun onPause() {
         super.onPause()
 
+        vm.update(project) // Persist
         activity.closeSoftKeyboard()
     }
 
@@ -151,7 +147,6 @@ class ProjectFragment : BaseFragment() {
             REQUEST_DATE -> {
                 data?.let {
                     project.moveDate = DatePickerFragment.dateResult(data).time // In-memory
-                    vm.update(project) // DB
                     updateUI() // UI
                 }
             }

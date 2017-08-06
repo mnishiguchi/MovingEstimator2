@@ -4,4 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="list_item_pack_min_height">48dp</dimen>
+    <dimen name="list_item_pack_horizontal_margin">8dp</dimen>
+    <dimen name="list_item_pack_vertical_margin">8dp</dimen>
 </resources>

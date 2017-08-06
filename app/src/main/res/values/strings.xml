@@ -11,4 +11,10 @@
     <string name="moved_on">Moved on %1$s</string>
     <string name="project_items">Items</string>
     <string name="project_packs">Project packs</string>
+    <string name="pack_list_header_name">Name</string>
+    <string name="pack_list_header_size">Size</string>
+    <string name="pack_list_header_qty">QTY</string>
+    <string name="pack_list_header_subtotal">ST</string>
+    <string name="pack_list_header_room">Room</string>
+    <string name="pack_list_header_comment">Comment</string>
 </resources>

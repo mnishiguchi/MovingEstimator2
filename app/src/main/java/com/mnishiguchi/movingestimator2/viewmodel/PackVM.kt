@@ -12,7 +12,7 @@ import org.jetbrains.anko.doAsync
  * A ViewModel for ProjectActivity. Must be initialized with a project id before use.
  * https://developer.android.com/topic/libraries/architecture/viewmodel.html
  */
-class PackVM(val dao: PackDao = App.database.packDao()) : ViewModel() {
+class PackVM(val packDao: PackDao = App.database.packDao()) : ViewModel() {
 
     /**
      * This DAO must be initialized with a project ID before use.
@@ -23,7 +23,7 @@ class PackVM(val dao: PackDao = App.database.packDao()) : ViewModel() {
 
         doAsync {
             // Set the packs for that project ID.
-            this@PackVM.packs = dao.all(projectId)
+            this@PackVM.packs = packDao.all(projectId)
         }
     }
 
@@ -52,11 +52,11 @@ class PackVM(val dao: PackDao = App.database.packDao()) : ViewModel() {
     fun create(): Pack = Pack().apply {
         val pack = this
         pack.projectId = this@PackVM.projectId
-        doAsync { dao.insert(pack) }
+        doAsync { packDao.insert(pack) }
     }
 
     fun insert(pack: Pack) {
         pack.projectId = this@PackVM.projectId
-        doAsync { dao.insert(pack) }
+        doAsync { packDao.insert(pack) }
     }
 }
